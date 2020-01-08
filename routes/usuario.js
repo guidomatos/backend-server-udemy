@@ -1,6 +1,5 @@
 var express = require('express');
 var bcrypt = require('bcryptjs');
-var jwt = require('jsonwebtoken');
 
 var mdAuthentication = require('../middlewares/autenticacion');
 
@@ -16,7 +15,7 @@ app.get('/', (req, res, next) => {
     var desde = req.query.desde || 0;
     desde = Number(desde);
 
-    Usuario.find({}, 'nombre email img role')
+    Usuario.find({}, 'nombre email img role google')
         .skip(desde)
         .limit(5)
         .exec(
@@ -48,7 +47,7 @@ app.get('/', (req, res, next) => {
 // Actualizar usuario
 // ========================================
 
-app.put('/:id', mdAuthentication.verificaToken, (req, res) => {
+app.put('/:id', [mdAuthentication.verificaToken, mdAuthentication.verificaADMIN_ROLE_o_MismoUsuario], (req, res) => {
 
     var id = req.params.id;
     var body = req.body;
@@ -102,7 +101,8 @@ app.put('/:id', mdAuthentication.verificaToken, (req, res) => {
 // Crear un nuevo usuario
 // ========================================
 
-app.post('/', mdAuthentication.verificaToken, (req, res) => {
+//app.post('/', mdAuthentication.verificaToken, (req, res) => {
+app.post('/', (req, res) => {
 
     var body = req.body;
 
@@ -138,7 +138,7 @@ app.post('/', mdAuthentication.verificaToken, (req, res) => {
 // Borrar un usuario por el id
 // ========================================
 
-app.delete('/:id', mdAuthentication.verificaToken, (req, res) => {
+app.delete('/:id', [mdAuthentication.verificaToken, mdAuthentication.verificaADMIN_ROLE_o_MismoUsuario], (req, res) => {
 
     var id = req.params.id;
 
